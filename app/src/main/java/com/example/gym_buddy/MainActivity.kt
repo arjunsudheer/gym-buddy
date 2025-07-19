@@ -11,7 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.gym_buddy.bottomnavigation.BottomNavItem
+import com.example.gym_buddy.bottomnavigation.BottomNavigationBar
 import com.example.gym_buddy.ui.theme.GymbuddyTheme
+import com.example.gym_buddy.workouts.WorkoutsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +24,46 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GymbuddyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainScreen()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainScreen() {
+    val navController = androidx.navigation.compose.rememberNavController()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = { BottomNavigationBar(navController = navController) }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = BottomNavItem.Workouts.route, // Default active page
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(BottomNavItem.Workouts.route) { WorkoutsScreen() }
+            composable(BottomNavItem.GymAI.route) { GymAIScreen() }
+            composable(BottomNavItem.GymsNearMe.route) { GymsNearMeScreen() }
+        }
+    }
+}
+
+
+@Composable
+fun GymAIScreen(modifier: Modifier = Modifier) {
+    Text("Gym AI Screen", modifier = modifier)
+}
+
+@Composable
+fun GymsNearMeScreen(modifier: Modifier = Modifier) {
+    Text("Gyms Near Me Screen", modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DefaultPreview() {
     GymbuddyTheme {
-        Greeting("Android")
+        MainScreen()
     }
 }
