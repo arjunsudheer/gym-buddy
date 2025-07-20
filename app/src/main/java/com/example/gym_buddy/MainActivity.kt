@@ -15,12 +15,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.gym_buddy.bottomnavigation.BottomNavItem
 import com.example.gym_buddy.bottomnavigation.BottomNavigationBar
+import com.example.gym_buddy.gymsnearme.LocalGymsMap
 import com.example.gym_buddy.ui.theme.GymbuddyTheme
-import com.example.gym_buddy.workouts.WorkoutsScreen
+import com.google.android.libraries.places.api.Places
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        }
+
+
         enableEdgeToEdge()
         setContent {
             GymbuddyTheme {
@@ -39,25 +47,24 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = BottomNavItem.Workouts.route, // Default active page
+            startDestination = BottomNavItem.GymsNearMe.route, // Default active page
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Workouts.route) { WorkoutsScreen() }
-            composable(BottomNavItem.GymAI.route) { GymAIScreen() }
-            composable(BottomNavItem.GymsNearMe.route) { GymsNearMeScreen() }
+            composable(BottomNavItem.GymAI.route) { GymAI() }
+            composable(BottomNavItem.GymsNearMe.route) { LocalGymsMap() }
         }
     }
 }
 
-
 @Composable
-fun GymAIScreen(modifier: Modifier = Modifier) {
-    Text("Gym AI Screen", modifier = modifier)
+fun WorkoutsScreen(modifier: Modifier = Modifier) {
+    Text("Workouts Screen", modifier = modifier)
 }
 
 @Composable
-fun GymsNearMeScreen(modifier: Modifier = Modifier) {
-    Text("Gyms Near Me Screen", modifier = modifier)
+fun GymAI(modifier: Modifier = Modifier) {
+    Text("GymAI Screen", modifier = modifier)
 }
 
 @Preview(showBackground = true)
