@@ -16,6 +16,8 @@ materialIconsAndCompose = "1.7.8"
 mapsCompose = "6.7.0"
 places = "4.4.1"
 secretsGradlePlugin = "2.0.1"
+generativeai = "0.9.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,7 +44,7 @@ google-maps-compose-utils = { group = "com.google.maps.android", name = "maps-co
 google-maps-compose-widgets = { group = "com.google.maps.android", name = "maps-compose-widgets", version.ref = "mapsCompose" }
 google-places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 secrets-gradle-plugin = { group = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", name = "secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
-
+generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.google.maps.compose.widgets)
     // Places API
     implementation(libs.google.places)
+    // Google Gemini API
+    implementation(libs.generativeai)
 }
 
 secrets {
