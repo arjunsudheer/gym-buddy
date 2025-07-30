@@ -1,7 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.maps.secret)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -16,6 +25,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Make the API key available as a BuildConfig field
+        buildConfigField(
+            type = "String",
+            name = "MAPS_API_KEY",
+            value = "\"${localProperties.getProperty("MAPS_API_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -27,20 +43,21 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+
+    kotlin {
+        compilerOptions {
+            optIn.add("kotlin.RequiresOptIn")
+        }
+        jvmToolchain(21)
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -49,6 +66,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,7 +74,22 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.navigation:navigation-compose:2.7.7") // Use the latest version
-    implementation("androidx.compose.material:material-icons-core:1.6.8") // For icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.8") // For more icons
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.google.maps)
+    // Google Maps Compose library
+    implementation(libs.google.maps.compose)
+    implementation(libs.google.maps.compose.utils)
+    implementation(libs.google.maps.compose.widgets)
+    // Places API
+    implementation(libs.google.places)
+    // Google Gemini API
+    implementation(libs.generativeai)
+}
+
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "local.properties"
 }
