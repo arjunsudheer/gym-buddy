@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +17,7 @@ import com.example.gym_buddy.bottomnavigation.BottomNavigationBar
 import com.example.gym_buddy.gymai.GymAI
 import com.example.gym_buddy.gymsnearme.LocalGymsMap
 import com.example.gym_buddy.ui.theme.GymbuddyTheme
+import com.example.gym_buddy.workouts.WorkoutsScreen
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
@@ -75,7 +75,7 @@ fun MainScreen(generativeModel: GenerativeModel) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = BottomNavItem.GymAI.route, // Default active page
+            startDestination = BottomNavItem.Workouts.route, // Default active page
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Workouts.route) { WorkoutsScreen() }
@@ -83,11 +83,6 @@ fun MainScreen(generativeModel: GenerativeModel) {
             composable(BottomNavItem.GymsNearMe.route) { LocalGymsMap() }
         }
     }
-}
-
-@Composable
-fun WorkoutsScreen(modifier: Modifier = Modifier) {
-    Text("Workouts Screen", modifier = modifier)
 }
 
 @Preview(showBackground = true)
