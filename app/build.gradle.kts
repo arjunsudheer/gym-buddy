@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.maps.secret)
+    alias(libs.plugins.ksp)
 }
 
 val localProperties = Properties()
@@ -86,6 +87,14 @@ dependencies {
     implementation(libs.google.places)
     // Google Gemini API
     implementation(libs.generativeai)
+    // Room
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.room.compiler)
+    implementation(libs.androidx.room.ktx) // For coroutines support
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx) // For collectAsState
+    implementation(libs.androidx.lifecycle.common.java8)
 }
 
 secrets {
