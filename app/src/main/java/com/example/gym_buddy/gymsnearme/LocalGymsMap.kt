@@ -5,8 +5,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -87,7 +87,9 @@ fun LocalGymsMap() {
                         CameraPosition.fromLatLngZoom(latLng, 12f) // Zoom closer
                     // Launch a coroutine to fetch gyms
                     coroutineScope.launch {
-                        val gyms = findNearbyGyms(placesClient, latLng)
+                        val gyms = findNearbyGyms(placesClient, latLng, onError = { error ->
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                        })
                         nearbyGymMarkers.clear()
                         nearbyGymMarkers.addAll(gyms)
                     }
@@ -189,9 +191,9 @@ private fun getCurrentLocation(
 ) {
     // Check if location is enabled on the device
     val locationManager =
-        context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
-    if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) &&
-        !locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&
+        !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     ) {
         Toast.makeText(context, "Please enable location services", Toast.LENGTH_LONG).show()
         // Optionally, guide user to settings:
@@ -263,8 +265,11 @@ private fun requestLocationAndFetchGyms(
                 // Ensure placesClient is initialized before this point
                 val gyms = findNearbyGyms(
                     placesClient,
-                    latLng
-                ) // Removed context, as PlacesClient is now passed
+                    latLng,
+                    onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                    }
+                )
                 nearbyGymMarkers.clear()
                 nearbyGymMarkers.addAll(gyms)
             }
@@ -288,11 +293,12 @@ data class GymInfo(
     val rating: Double? = null
 )
 
-@SuppressLint("MissingPermission") // Ensure permissions are checked before calling functions that need them
+@SuppressLint("MissingPermission")
 suspend fun findNearbyGyms(
     placesClient: PlacesClient, // Pass the PlacesClient
     center: LatLng,
-    radiusMeters: Double = 5000.0 // Radius in meters (5km)
+    radiusMeters: Double = 5000.0, // Radius in meters (5km)
+    onError: (String) -> Unit // Lambda for error handling
 ): List<GymInfo> {
     val placeFields = listOf(
         Place.Field.ID,
@@ -301,12 +307,12 @@ suspend fun findNearbyGyms(
         Place.Field.RATING
     )
 
-    // Define the search area as a circle around the user's location. Radius in meters.
+    // Define the search area as a circle around the user's location, radius in meters
     val searchBounds = CircularBounds.newInstance(center, radiusMeters)
 
-    // Construct the SearchNearbyRequest.
-    //    - Set the included primary type to "gym".
-    //    - Set location restriction for more relevant results.
+    // Construct the SearchNearbyRequest
+    //    - Set the included primary type to "gym"
+    //    - Set location restriction for more relevant results
     val searchNearbyRequest = SearchNearbyRequest.builder(searchBounds, placeFields)
         .setIncludedPrimaryTypes(listOf("gym"))
         .setMaxResultCount(10)
@@ -338,8 +344,8 @@ suspend fun findNearbyGyms(
             }
         }
     } catch (e: Exception) {
-        // Handle exceptions, e.g., from network errors or API issues
-        Log.e("NearbyGyms", "Error finding nearby gyms: ${e.message}", e)
+        // Display popup telling user that there was an error and they should try again later
+        onError("Failed to find nearby gyms. Please try again later. Error: ${e.localizedMessage}")
     }
 
     return gymResults

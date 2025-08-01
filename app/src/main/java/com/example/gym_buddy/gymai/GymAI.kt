@@ -1,6 +1,5 @@
 package com.example.gym_buddy.gymai
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -124,9 +123,7 @@ suspend fun askGymAI(model: GenerativeModel, query: String): String? {
         // Use the passed-in model instance
         val apiResponse = model.generateContent(prompt)
         return apiResponse.text
-    } catch (e: Exception) {
-        // Log the exception for debugging
-        Log.e("GymAI", "Error calling GenerativeModel: ${e.message}", e)
+    } catch (_: Exception) {
         return "There was an error with GymAI. Please try again after some time."
     }
 }
