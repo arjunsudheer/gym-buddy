@@ -103,7 +103,7 @@ fun WorkoutItem(
     workout: WorkoutEntity,
     onDelete: () -> Unit,
     onUpdate: (WorkoutEntity) -> Unit,
-    modifier: Modifier = Modifier // Keep modifier for general layout purposes
+    modifier: Modifier = Modifier
 ) {
     // Local state for text fields, remembered against workout.id to reset when the item changes
     var exerciseName by remember(
@@ -192,20 +192,6 @@ fun WorkoutItem(
                     )
                 }
             }
-//            Spacer(modifier = Modifier.height(8.dp))
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.End, // Align buttons to the right
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                IconButton(onClick = onDelete) {
-//                    Icon(
-//                        imageVector = Icons.Filled.Delete,
-//                        contentDescription = "Delete Workout",
-//                        tint = MaterialTheme.colorScheme.error
-//                    )
-//                }
-//            }
         }
     }
 }

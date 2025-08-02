@@ -47,8 +47,8 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
 
     fun updateWorkout(workout: WorkoutEntity) {
         viewModelScope.launch {
-            // This assumes your WorkoutEntity has a primary key that Room can use for updates
-            // If the workout already exists, insert with OnConflictStrategy.REPLACE will update it.
+            // Assumes WorkoutEntity has a primary key that Room can use for updates
+            // If the workout already exists, insert with OnConflictStrategy.REPLACE will update it
             workoutDao.insertWorkout(workout)
         }
     }
