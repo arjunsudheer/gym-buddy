@@ -2,7 +2,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.maps.secret)
     alias(libs.plugins.ksp)
@@ -27,11 +26,18 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY") ?: "UNSET"
+
         // Make the API key available as a BuildConfig field
         buildConfigField(
             type = "String",
             name = "MAPS_API_KEY",
             value = "\"${localProperties.getProperty("MAPS_API_KEY")}\""
+        )
+        buildConfigField(
+            type = "String",
+            name = "GEMINI_API_KEY",
+            value = "\"${localProperties.getProperty("GEMINI_API_KEY")}\""
         )
     }
 
@@ -49,18 +55,19 @@ android {
         }
     }
 
-    kotlin {
-        compilerOptions {
-            optIn.add("kotlin.RequiresOptIn")
-        }
-        jvmToolchain(21)
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
     }
 }
+
+kotlin {
+    compilerOptions {
+        optIn.add("kotlin.RequiresOptIn")
+    }
+    jvmToolchain(25)
+}
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
