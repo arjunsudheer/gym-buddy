@@ -14,60 +14,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.gym_buddy.bottomnavigation.BottomNavItem
 import com.example.gym_buddy.bottomnavigation.BottomNavigationBar
-import com.example.gym_buddy.gymai.GymAI
-import com.example.gym_buddy.gymsnearme.LocalGymsMap
 import com.example.gym_buddy.ui.theme.GymbuddyTheme
 import com.example.gym_buddy.workouts.WorkoutsScreen
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.BlockThreshold
-import com.google.ai.client.generativeai.type.HarmCategory
-import com.google.ai.client.generativeai.type.SafetySetting
-import com.google.ai.client.generativeai.type.generationConfig
-import com.google.android.libraries.places.api.Places
 
 
 class MainActivity : ComponentActivity() {
-    // Initialize this once
-    private lateinit var generativeModel: GenerativeModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
-        }
-
-        generativeModel = GenerativeModel(
-            "gemini-2.0-flash-lite",
-            apiKey = BuildConfig.GEMINI_API_KEY,
-            generationConfig = generationConfig {
-                temperature = 0f // Get consistent responses
-                maxOutputTokens = 150 // About 100 english words
-                temperature = 0.9f
-                topK = 16
-                topP = 0.1f
-            },
-            // Filter out harmful content
-            safetySettings = listOf(
-                SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.LOW_AND_ABOVE),
-                SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.LOW_AND_ABOVE),
-                SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.LOW_AND_ABOVE),
-                SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.LOW_AND_ABOVE),
-            )
-        )
-
-
         enableEdgeToEdge()
         setContent {
             GymbuddyTheme {
-                MainScreen(generativeModel)
+                MainScreen()
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(generativeModel: GenerativeModel) {
+fun MainScreen() {
     val navController = androidx.navigation.compose.rememberNavController()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -79,8 +45,6 @@ fun MainScreen(generativeModel: GenerativeModel) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Workouts.route) { WorkoutsScreen() }
-            composable(BottomNavItem.GymAI.route) { GymAI(generativeModel) }
-            composable(BottomNavItem.GymsNearMe.route) { LocalGymsMap() }
         }
     }
 }
@@ -89,26 +53,6 @@ fun MainScreen(generativeModel: GenerativeModel) {
 @Composable
 fun DefaultPreview() {
     GymbuddyTheme {
-        // Create dummy generativeModel for preview sake
-        MainScreen(
-            generativeModel = GenerativeModel(
-                "gemini-2.0-flash-lite",
-                apiKey = BuildConfig.GEMINI_API_KEY,
-                generationConfig = generationConfig {
-                    temperature = 0f // Get consistent responses
-                    maxOutputTokens = 150 // About 100 english words
-                    temperature = 0.9f
-                    topK = 16
-                    topP = 0.1f
-                },
-                // Filter out harmful content
-                safetySettings = listOf(
-                    SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.LOW_AND_ABOVE),
-                    SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.LOW_AND_ABOVE),
-                    SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.LOW_AND_ABOVE),
-                    SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.LOW_AND_ABOVE),
-                )
-            )
-        )
+        MainScreen()
     }
 }
