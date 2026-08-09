@@ -30,7 +30,7 @@ fun TopDaySelector(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         items(days) { day ->
             val isSelected = day == selectedDay
@@ -42,11 +42,11 @@ fun TopDaySelector(
                         else MaterialTheme.colorScheme.surface
                     )
                     .clickable { onDaySelected(day) }
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = day,
+                    text = day.take(1),
                     color = if (isSelected) Color.Black else Color.White,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                     fontSize = 14.sp

@@ -1,6 +1,7 @@
 package com.example.gym_buddy.workouts
 
 import android.app.Application
+import java.util.Calendar
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gym_buddy.workouts.models.Exercise
@@ -17,14 +18,16 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
     private val workoutDao = WorkoutsDB.getDatabase(application).workoutDao()
 
     val daysOfWeek =
-        listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
     private val fullDaysOfWeek =
-        listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+        listOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 
     private val dayMapping = daysOfWeek.zip(fullDaysOfWeek).toMap()
 
-    private val _selectedDay = MutableStateFlow(daysOfWeek[0])
+    private val _selectedDay = MutableStateFlow(
+        daysOfWeek[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1]
+    )
     val selectedDay: StateFlow<String> = _selectedDay
 
     private val _workoutsByDay = MutableStateFlow<Map<String, List<WorkoutEntity>>>(emptyMap())
