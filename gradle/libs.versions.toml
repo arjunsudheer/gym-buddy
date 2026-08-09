@@ -13,6 +13,12 @@ navigationCompose = "2.9.8"
 materialIconsAndCompose = "1.7.8"
 roomRuntime = "2.8.4"
 ksp = "2.3.11"
+mockk = "1.14.11"
+kotlinxCoroutinesTest = "1.11.0"
+turbine = "1.2.1"
+coreTesting = "2.2.0"
+robolectric = "4.16.1"
+androidxTestCore = "1.7.0"
 
 
 [libraries]
@@ -38,6 +44,12 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "materialIconsAndCompose" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsAndCompose" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+androidx-test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "androidxTestCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

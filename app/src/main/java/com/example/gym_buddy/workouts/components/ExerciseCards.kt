@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -70,9 +69,9 @@ fun WeightExerciseCard(
     var notes by remember(workout.id, workout.notes) { mutableStateOf(workout.notes) }
 
     LaunchedEffect(exerciseName, weight, sets, reps, notes) {
-        val w = weight.toIntOrNull() ?: workout.weight
-        val s = sets.toIntOrNull() ?: workout.sets
-        val r = reps.toIntOrNull() ?: workout.reps
+        val w = (weight.toIntOrNull() ?: workout.weight).coerceAtLeast(0)
+        val s = (sets.toIntOrNull() ?: workout.sets).coerceAtLeast(0)
+        val r = (reps.toIntOrNull() ?: workout.reps).coerceAtLeast(0)
         if (exerciseName != workout.name || w != workout.weight || 
             s != workout.sets || r != workout.reps || notes != workout.notes) {
             onUpdate(workout.copy(
@@ -106,16 +105,16 @@ fun WeightExerciseCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "$weight kg • $sets sets • $reps reps",
+                        text = "$weight • $sets sets • $reps reps",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -125,7 +124,10 @@ fun WeightExerciseCard(
                 exit = shrinkVertically()
             ) {
                 Column(modifier = Modifier.padding(top = 16.dp)) {
-                    HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp), color = Color.DarkGray)
+                    HorizontalDivider(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                     
                     OutlinedTextField(
                         value = weight,
@@ -136,7 +138,7 @@ fun WeightExerciseCard(
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            unfocusedBorderColor = Color.DarkGray
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
                     
@@ -152,7 +154,7 @@ fun WeightExerciseCard(
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                                unfocusedBorderColor = Color.DarkGray
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
                         OutlinedTextField(
@@ -164,7 +166,7 @@ fun WeightExerciseCard(
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                                unfocusedBorderColor = Color.DarkGray
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
                     }
@@ -179,7 +181,7 @@ fun WeightExerciseCard(
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            unfocusedBorderColor = Color.DarkGray
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
                 }

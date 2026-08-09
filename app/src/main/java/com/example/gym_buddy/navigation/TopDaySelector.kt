@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +46,8 @@ fun TopDaySelector(
             ) {
                 Text(
                     text = day.take(1),
-                    color = if (isSelected) Color.Black else Color.White,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary 
+                            else MaterialTheme.colorScheme.onSurface,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                     fontSize = 14.sp
                 )

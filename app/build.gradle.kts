@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.example.gym_buddy"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -42,7 +42,7 @@ kotlin {
     compilerOptions {
         optIn.add("kotlin.RequiresOptIn")
     }
-    jvmToolchain(25)
+    jvmToolchain(21)
 }
 
 
@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
@@ -72,4 +73,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     // For collectAsState
     implementation(libs.androidx.lifecycle.common.java8)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core.ktx)
 }
