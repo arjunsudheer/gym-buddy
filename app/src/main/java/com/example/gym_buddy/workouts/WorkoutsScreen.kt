@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -35,14 +33,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -106,13 +106,46 @@ fun WorkoutsScreen(
             ) {
                 item { Spacer(modifier = Modifier.height(8.dp)) }
                 items(workouts, key = { it.id }) { workout ->
-                    WorkoutCard(
-                        workout = workout,
-                        isExpanded = expandedId == workout.id,
-                        onToggleExpand = { viewModel.toggleWorkoutExpansion(workout.id) },
-                        onDelete = { viewModel.confirmDeleteWorkout(workout) },
-                        onUpdate = { viewModel.updateWorkout(it) }
-                    )
+                    val dismissState = rememberSwipeToDismissBoxState()
+
+                    LaunchedEffect(dismissState.currentValue) {
+                        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                            viewModel.confirmDeleteWorkout(workout)
+                            dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+                        }
+                    }
+
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        backgroundContent = {
+                            val color = if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                MaterialTheme.colorScheme.error
+                            } else Color.Transparent
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(color)
+                                    .padding(horizontal = 20.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    ) {
+                        WorkoutCard(
+                            workout = workout,
+                            isExpanded = expandedId == workout.id,
+                            onToggleExpand = { viewModel.toggleWorkoutExpansion(workout.id) },
+                            onUpdate = { viewModel.updateWorkout(it) }
+                        )
+                    }
                 }
                 item { Spacer(modifier = Modifier.height(80.dp)) } // Space for FAB
             }
@@ -177,7 +210,6 @@ fun WorkoutCard(
     workout: WorkoutEntity,
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
-    onDelete: () -> Unit,
     onUpdate: (WorkoutEntity) -> Unit
 ) {
     var exerciseName by remember(workout.id, workout.exerciseName) { mutableStateOf(workout.exerciseName) }
@@ -227,10 +259,6 @@ fun WorkoutCard(
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
-                }
-                
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
                 }
                 
                 Icon(
