@@ -11,8 +11,6 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "workouts")
@@ -24,6 +22,7 @@ data class WorkoutEntity(
     var reps: Int = 0,
     var weight: Int = 0,
     var notes: String = "",
+    var type: String = "WEIGHT", // "WEIGHT" or "REST"
 )
 
 @Dao
@@ -34,61 +33,21 @@ interface WorkoutDao {
     @Delete
     suspend fun deleteWorkout(workout: WorkoutEntity)
 
+    @Query("DELETE FROM workouts WHERE dayOfWeek = :day")
+    suspend fun deleteAllWorkoutsForDay(day: String)
+
     // Order by descending ID to show most recent workouts first
     @Query("SELECT * FROM workouts WHERE dayOfWeek = :day ORDER BY id DESC")
     fun getWorkoutsForDay(day: String): Flow<List<WorkoutEntity>>
 }
 
-@Database(entities = [WorkoutEntity::class], version = 5, exportSchema = false)
+@Database(entities = [WorkoutEntity::class], version = 6, exportSchema = false)
 abstract class WorkoutsDB : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
 
     companion object {
         @Volatile
         private var INSTANCE: WorkoutsDB? = null
-
-        val WORKOUT_DB_MIGRATION_4_5 = object : Migration(4, 5) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                // Create the new table
-                db.execSQL(
-                    "CREATE TABLE workouts_new (" +
-                            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                            "dayOfWeek TEXT NOT NULL, " +
-                            "exerciseName TEXT NOT NULL, " +
-                            "sets INTEGER NOT NULL, " +
-                            "reps INTEGER NOT NULL, " +
-                            "weight INTEGER NOT NULL, " +
-                            "notes TEXT NOT NULL)"
-                )
-                // Copy the data
-                db.execSQL(
-                    "INSERT INTO workouts_new (id, dayOfWeek, exerciseName, sets, reps, weight, notes) " +
-                            "SELECT id, dayOfWeek, exerciseName, " +
-                            "CAST(sets AS INTEGER), CAST(reps AS INTEGER), CAST(weight AS INTEGER), notes " +
-                            "FROM workouts"
-                )
-                // Remove the old table
-                db.execSQL("DROP TABLE workouts")
-                // Rename the new table
-                db.execSQL("ALTER TABLE workouts_new RENAME TO workouts")
-            }
-        }
-
-        val WORKOUT_DB_MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE workouts ADD COLUMN notes TEXT DEFAULT '' NOT NULL")
-                db.execSQL("ALTER TABLE workouts ADD COLUMN weightHistory TEXT DEFAULT '' NOT NULL")
-            }
-        }
-
-        val WORKOUT_DB_MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                // Provide a migration strategy if database columns need to be changed
-                db.execSQL("ALTER TABLE workouts DROP COLUMN leftWeight")
-                db.execSQL("ALTER TABLE workouts DROP COLUMN rightWeight")
-                db.execSQL("ALTER TABLE workouts ADD COLUMN weight TEXT DEFAULT '' NOT NULL")
-            }
-        }
 
         fun getDatabase(context: Context): WorkoutsDB {
             return INSTANCE ?: synchronized(this) {
@@ -97,11 +56,7 @@ abstract class WorkoutsDB : RoomDatabase() {
                     WorkoutsDB::class.java,
                     "workout_database"
                 )
-                    .addMigrations(
-                        WORKOUT_DB_MIGRATION_2_3,
-                        WORKOUT_DB_MIGRATION_3_4,
-                        WORKOUT_DB_MIGRATION_4_5
-                    )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                 INSTANCE = instance
                 instance

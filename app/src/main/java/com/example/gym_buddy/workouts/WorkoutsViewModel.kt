@@ -3,6 +3,9 @@ package com.example.gym_buddy.workouts
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gym_buddy.workouts.models.Exercise
+import com.example.gym_buddy.workouts.models.RestExercise
+import com.example.gym_buddy.workouts.models.WeightExercise
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,12 +29,12 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
 
     private val _workoutsByDay = MutableStateFlow<Map<String, List<WorkoutEntity>>>(emptyMap())
     
-    val workoutsForSelectedDay: StateFlow<List<WorkoutEntity>> = combine(
+    val workoutsForSelectedDay: StateFlow<List<Exercise>> = combine(
         _selectedDay,
         _workoutsByDay
     ) { selected, allWorkouts ->
         val fullDay = dayMapping[selected] ?: "Monday"
-        allWorkouts[fullDay] ?: emptyList()
+        allWorkouts[fullDay]?.map { it.toDomain() } ?: emptyList()
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _expandedWorkoutId = MutableStateFlow<Int?>(null)
@@ -40,8 +43,11 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
     private val _isAddModalVisible = MutableStateFlow(false)
     val isAddModalVisible: StateFlow<Boolean> = _isAddModalVisible
 
-    private val _workoutToDelete = MutableStateFlow<WorkoutEntity?>(null)
-    val workoutToDelete: StateFlow<WorkoutEntity?> = _workoutToDelete
+    private val _workoutToDelete = MutableStateFlow<Exercise?>(null)
+    val workoutToDelete: StateFlow<Exercise?> = _workoutToDelete
+
+    private val _showRestDayConfirmation = MutableStateFlow(false)
+    val showRestDayConfirmation: StateFlow<Boolean> = _showRestDayConfirmation
 
     init {
         // Observe workouts for each day and update the map
@@ -70,8 +76,12 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
         _isAddModalVisible.value = show
     }
 
-    fun confirmDeleteWorkout(workout: WorkoutEntity?) {
+    fun confirmDeleteWorkout(workout: Exercise?) {
         _workoutToDelete.value = workout
+    }
+
+    fun setShowRestDayConfirmation(show: Boolean) {
+        _showRestDayConfirmation.value = show
     }
 
     fun addWorkout(exerciseName: String, weight: String, sets: String, reps: String) {
@@ -83,23 +93,87 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
                     exerciseName = exerciseName,
                     weight = weight.toIntOrNull() ?: 0,
                     sets = sets.toIntOrNull() ?: 0,
-                    reps = reps.toIntOrNull() ?: 0
+                    reps = reps.toIntOrNull() ?: 0,
+                    type = "WEIGHT"
                 )
             )
             showAddModal(false)
         }
     }
 
-    fun deleteWorkout(workout: WorkoutEntity) {
+    fun onAddRestDayRequested() {
+        if (workoutsForSelectedDay.value.isNotEmpty()) {
+            _showRestDayConfirmation.value = true
+        } else {
+            addRestDay()
+        }
+    }
+
+    fun addRestDay() {
         viewModelScope.launch {
-            workoutDao.deleteWorkout(workout)
+            val fullDay = dayMapping[_selectedDay.value] ?: "Monday"
+            workoutDao.deleteAllWorkoutsForDay(fullDay)
+            workoutDao.insertWorkout(
+                WorkoutEntity(
+                    dayOfWeek = fullDay,
+                    exerciseName = "Rest Day",
+                    type = "REST"
+                )
+            )
+            _showRestDayConfirmation.value = false
+        }
+    }
+
+    fun deleteWorkout(exercise: Exercise) {
+        viewModelScope.launch {
+            val fullDay = dayMapping[_selectedDay.value] ?: "Monday"
+            // We need to find the entity to delete it, or just use a dummy one with the same ID
+            workoutDao.deleteWorkout(
+                WorkoutEntity(
+                    id = exercise.id,
+                    dayOfWeek = fullDay // Required by Entity structure but maybe not by DAO if it only uses ID
+                )
+            )
             confirmDeleteWorkout(null)
         }
     }
 
-    fun updateWorkout(workout: WorkoutEntity) {
+    fun updateWorkout(exercise: Exercise) {
         viewModelScope.launch {
-            workoutDao.insertWorkout(workout)
+            val fullDay = dayMapping[_selectedDay.value] ?: "Monday"
+            val entity = when (exercise) {
+                is WeightExercise -> WorkoutEntity(
+                    id = exercise.id,
+                    dayOfWeek = fullDay,
+                    exerciseName = exercise.name,
+                    sets = exercise.sets,
+                    reps = exercise.reps,
+                    weight = exercise.weight,
+                    notes = exercise.notes,
+                    type = "WEIGHT"
+                )
+                is RestExercise -> WorkoutEntity(
+                    id = exercise.id,
+                    dayOfWeek = fullDay,
+                    exerciseName = exercise.name,
+                    type = "REST"
+                )
+            }
+            workoutDao.insertWorkout(entity)
+        }
+    }
+
+    private fun WorkoutEntity.toDomain(): Exercise {
+        return when (type) {
+            "REST" -> RestExercise(id = id)
+            else -> WeightExercise(
+                id = id,
+                name = exerciseName,
+                sets = sets,
+                reps = reps,
+                weight = weight,
+                notes = notes
+            )
         }
     }
 }

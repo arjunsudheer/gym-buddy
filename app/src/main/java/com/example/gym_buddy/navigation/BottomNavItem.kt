@@ -1,4 +1,4 @@
-package com.example.gym_buddy.bottomnavigation
+package com.example.gym_buddy.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
