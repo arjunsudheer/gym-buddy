@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -89,7 +88,7 @@ fun AddExerciseModal(
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.secondary,
-                            unfocusedBorderColor = Color.DarkGray
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
                     ExposedDropdownMenu(
@@ -169,7 +168,7 @@ fun AddExerciseModal(
                         text = if (isRestDay) "This day is already marked as a rest day." 
                                else "Marking this day as a rest day will clear all other exercises.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
@@ -187,16 +186,18 @@ fun AddExerciseModal(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !(exerciseType == "Weight Exercise" && isRestDay) && !(exerciseType == "Rest Day" && isRestDay),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     Text(
-                        text = if (exerciseType == "Weight Exercise") "Save Exercise" else "Set Rest Day",
-                        color = Color.Black
+                        text = if (exerciseType == "Weight Exercise") "Save Exercise" else "Set Rest Day"
                     )
                 }
 
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel", color = Color.Gray)
+                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -219,12 +220,12 @@ fun DeleteConfirmationDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = Color.White)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = Color.White,
-        textContentColor = Color.LightGray
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
 
@@ -244,11 +245,11 @@ fun RestDayConfirmationDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = Color.White)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = Color.White,
-        textContentColor = Color.LightGray
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }

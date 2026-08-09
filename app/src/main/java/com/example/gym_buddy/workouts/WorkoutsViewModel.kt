@@ -14,8 +14,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class WorkoutsViewModel(application: Application) : AndroidViewModel(application) {
-    private val workoutDao = WorkoutsDB.getDatabase(application).workoutDao()
+class WorkoutsViewModel(
+    application: Application,
+    private val workoutDao: WorkoutDao
+) : AndroidViewModel(application) {
 
     val daysOfWeek =
         listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
@@ -94,9 +96,9 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
                 WorkoutEntity(
                     dayOfWeek = fullDay,
                     exerciseName = exerciseName,
-                    weight = weight.toIntOrNull() ?: 0,
-                    sets = sets.toIntOrNull() ?: 0,
-                    reps = reps.toIntOrNull() ?: 0,
+                    weight = (weight.toIntOrNull() ?: 0).coerceAtLeast(0),
+                    sets = (sets.toIntOrNull() ?: 0).coerceAtLeast(0),
+                    reps = (reps.toIntOrNull() ?: 0).coerceAtLeast(0),
                     type = "WEIGHT"
                 )
             )
