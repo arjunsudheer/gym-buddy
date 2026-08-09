@@ -38,6 +38,7 @@ import com.example.gym_buddy.workouts.components.AddExerciseModal
 import com.example.gym_buddy.workouts.components.DeleteConfirmationDialog
 import com.example.gym_buddy.workouts.components.RestDayConfirmationDialog
 import com.example.gym_buddy.workouts.components.WorkoutCard
+import com.example.gym_buddy.workouts.models.RestExercise
 
 @Composable
 fun WorkoutsScreen(
@@ -107,11 +108,13 @@ fun WorkoutsScreen(
                                     .padding(horizontal = 20.dp),
                                 contentAlignment = Alignment.CenterEnd
                             ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "Delete",
-                                    tint = Color.White
-                                )
+                                if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Delete",
+                                        tint = Color.White
+                                    )
+                                }
                             }
                         }
                     ) {
@@ -129,7 +132,9 @@ fun WorkoutsScreen(
     }
 
     if (isAddVisible) {
+        val isRestDay = workouts.any { it is RestExercise }
         AddExerciseModal(
+            isRestDay = isRestDay,
             onDismiss = { viewModel.showAddModal(false) },
             onSave = { name, weight, sets, reps ->
                 viewModel.addWorkout(name, weight, sets, reps)

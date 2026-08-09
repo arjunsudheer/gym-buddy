@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExerciseModal(
+    isRestDay: Boolean = false,
     onDismiss: () -> Unit,
     onSave: (String, String, String, String) -> Unit,
     onAddRestDay: () -> Unit
@@ -47,7 +48,7 @@ fun AddExerciseModal(
     var weight by remember { mutableStateOf("") }
     var sets by remember { mutableStateOf("") }
     var reps by remember { mutableStateOf("") }
-    var exerciseType by remember { mutableStateOf("Weight Exercise") }
+    var exerciseType by remember { mutableStateOf(if (isRestDay) "Rest Day" else "Weight Exercise") }
     var expanded by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -115,48 +116,58 @@ fun AddExerciseModal(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (exerciseType == "Weight Exercise") {
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Exercise Name") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    
-                    Spacer(modifier = Modifier.height(12.dp))
-                    
-                    OutlinedTextField(
-                        value = weight,
-                        onValueChange = { weight = it },
-                        label = { Text("Weight") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    
-                    Spacer(modifier = Modifier.height(12.dp))
-                    
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (isRestDay) {
+                        Text(
+                            text = "Cannot add exercises as this day is marked as a rest day.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    } else {
                         OutlinedTextField(
-                            value = sets,
-                            onValueChange = { sets = it },
-                            label = { Text("Sets") },
-                            modifier = Modifier.weight(1f),
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Exercise Name") },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        OutlinedTextField(
+                            value = weight,
+                            onValueChange = { weight = it },
+                            label = { Text("Weight") },
+                            modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(12.dp)
                         )
-                        OutlinedTextField(
-                            value = reps,
-                            onValueChange = { reps = it },
-                            label = { Text("Reps") },
-                            modifier = Modifier.weight(1f),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp)
-                        )
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = sets,
+                                onValueChange = { sets = it },
+                                label = { Text("Sets") },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            OutlinedTextField(
+                                value = reps,
+                                onValueChange = { reps = it },
+                                label = { Text("Reps") },
+                                modifier = Modifier.weight(1f),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                        }
                     }
                 } else {
                     Text(
-                        text = "Marking this day as a rest day will clear all other exercises.",
+                        text = if (isRestDay) "This day is already marked as a rest day." 
+                               else "Marking this day as a rest day will clear all other exercises.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                         modifier = Modifier.padding(vertical = 16.dp)
@@ -174,6 +185,7 @@ fun AddExerciseModal(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !(exerciseType == "Weight Exercise" && isRestDay) && !(exerciseType == "Rest Day" && isRestDay),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
