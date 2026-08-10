@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +54,22 @@ fun AddExerciseModal(
     var exerciseType by remember { mutableStateOf(if (isRestDay) "Rest Day" else "Weight Exercise") }
     var expanded by remember { mutableStateOf(false) }
 
-    Dialog(onDismissRequest = onDismiss) {
+    val weightVal = weight.toIntOrNull() ?: 0
+    val isWeightError = weight.isNotEmpty() && weightVal > 500
+    val setsVal = sets.toIntOrNull() ?: 0
+    val isSetsError = sets.isNotEmpty() && setsVal > 100
+    val repsVal = reps.toIntOrNull() ?: 0
+    val isRepsError = reps.isNotEmpty() && repsVal > 100
+    
+    val scrollState = rememberScrollState()
+
+    Dialog(
+        onDismissRequest = { },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -60,7 +78,9 @@ fun AddExerciseModal(
             color = MaterialTheme.colorScheme.surface
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier = Modifier
+                    .padding(24.dp)
+                    .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -129,7 +149,8 @@ fun AddExerciseModal(
                             onValueChange = { name = it },
                             label = { Text("Exercise Name") },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true
                         )
                         
                         Spacer(modifier = Modifier.height(12.dp))
@@ -140,7 +161,14 @@ fun AddExerciseModal(
                             label = { Text("Weight ($weightUnit)") },
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            singleLine = true,
+                            isError = isWeightError,
+                            supportingText = {
+                                if (isWeightError) {
+                                    Text(text = "Max weight is 500", color = MaterialTheme.colorScheme.error)
+                                }
+                            }
                         )
                         
                         Spacer(modifier = Modifier.height(12.dp))
@@ -152,7 +180,14 @@ fun AddExerciseModal(
                                 label = { Text("Sets") },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                isError = isSetsError,
+                                supportingText = {
+                                    if (isSetsError) {
+                                        Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                    }
+                                }
                             )
                             OutlinedTextField(
                                 value = reps,
@@ -160,7 +195,14 @@ fun AddExerciseModal(
                                 label = { Text("Reps") },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                isError = isRepsError,
+                                supportingText = {
+                                    if (isRepsError) {
+                                        Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                    }
+                                }
                             )
                         }
                     }
@@ -176,7 +218,11 @@ fun AddExerciseModal(
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                val isWeightFormValid = name.isNotBlank() && weight.isNotBlank() && sets.isNotBlank() && reps.isNotBlank()
+                val isWeightFormValid = name.isNotBlank() && 
+                    weight.isNotBlank() && !isWeightError &&
+                    sets.isNotBlank() && !isSetsError &&
+                    reps.isNotBlank() && !isRepsError
+                
                 val isButtonEnabled = if (exerciseType == "Weight Exercise") {
                     !isRestDay && isWeightFormValid
                 } else {
@@ -218,7 +264,11 @@ fun DeleteConfirmationDialog(
     onConfirm: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        ),
         title = { Text("Remove this exercise?") },
         text = { Text("This action cannot be undone.") },
         confirmButton = {
@@ -243,7 +293,11 @@ fun RestDayConfirmationDialog(
     onConfirm: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        ),
         title = { Text("Set as Rest Day?") },
         text = { Text("This will clear all existing exercises for this day. Continue?") },
         confirmButton = {
