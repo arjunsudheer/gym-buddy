@@ -1,4 +1,4 @@
-package com.example.gym_buddy.bottomnavigation
+package com.example.gym_buddy.navigation
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -13,13 +13,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gym_buddy.ui.theme.GymbuddyTheme
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavBar(navController: NavController) {
     val items = listOf(
         BottomNavItem.Workouts,
-        BottomNavItem.GymAI,
-        BottomNavItem.GymsNearMe
+        BottomNavItem.Settings
     )
-    // Observe the back stack entry to reflect the current route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -31,18 +29,12 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true
                             }
                         }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
                 }
@@ -53,9 +45,9 @@ fun BottomNavigationBar(navController: NavController) {
 
 @Preview(showBackground = true)
 @Composable
-fun BottomNavigationBarPreview() {
+fun BottomNavBarPreview() {
     GymbuddyTheme {
         val navController = rememberNavController()
-        BottomNavigationBar(navController = navController)
+        BottomNavBar(navController = navController)
     }
 }
