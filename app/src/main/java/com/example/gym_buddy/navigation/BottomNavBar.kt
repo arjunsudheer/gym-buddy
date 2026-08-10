@@ -15,7 +15,8 @@ import com.example.gym_buddy.ui.theme.GymbuddyTheme
 @Composable
 fun BottomNavBar(navController: NavController) {
     val items = listOf(
-        BottomNavItem.Workouts
+        BottomNavItem.Workouts,
+        BottomNavItem.Settings
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

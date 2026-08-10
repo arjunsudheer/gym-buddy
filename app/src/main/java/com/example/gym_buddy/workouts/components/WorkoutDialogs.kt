@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 @Composable
 fun AddExerciseModal(
     isRestDay: Boolean = false,
+    weightUnit: String = "lbs",
     onDismiss: () -> Unit,
     onSave: (String, String, String, String) -> Unit,
     onAddRestDay: () -> Unit
@@ -136,7 +137,7 @@ fun AddExerciseModal(
                         OutlinedTextField(
                             value = weight,
                             onValueChange = { weight = it },
-                            label = { Text("Weight") },
+                            label = { Text("Weight ($weightUnit)") },
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(12.dp)
@@ -175,6 +176,13 @@ fun AddExerciseModal(
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
+                val isWeightFormValid = name.isNotBlank() && weight.isNotBlank() && sets.isNotBlank() && reps.isNotBlank()
+                val isButtonEnabled = if (exerciseType == "Weight Exercise") {
+                    !isRestDay && isWeightFormValid
+                } else {
+                    !isRestDay
+                }
+
                 Button(
                     onClick = {
                         if (exerciseType == "Weight Exercise") {
@@ -184,7 +192,7 @@ fun AddExerciseModal(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !(exerciseType == "Weight Exercise" && isRestDay) && !(exerciseType == "Rest Day" && isRestDay),
+                    enabled = isButtonEnabled,
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,

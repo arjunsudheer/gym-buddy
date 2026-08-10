@@ -2,7 +2,9 @@ package com.example.gym_buddy.navigation
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.createGraph
 import com.example.gym_buddy.ui.theme.GymbuddyTheme
 import org.junit.Rule
 import org.junit.Test
@@ -40,13 +42,17 @@ class NavigationUITest {
         composeTestRule.setContent {
             GymbuddyTheme {
                 val navController = rememberNavController()
+                // Set a dummy graph to avoid "You must call setGraph() before calling getGraph()"
+                navController.graph = navController.createGraph(startDestination = "workouts") {
+                    composable("workouts") {}
+                    composable("settings") {}
+                }
                 BottomNavBar(navController = navController)
             }
         }
 
-        // Currently only "Workouts" is defined in BottomNavItem
         composeTestRule.onNodeWithText("Workouts").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Workouts").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Settings").assertIsDisplayed()
     }
 
     @Test
@@ -54,10 +60,15 @@ class NavigationUITest {
         composeTestRule.setContent {
             GymbuddyTheme {
                 val navController = rememberNavController()
+                navController.graph = navController.createGraph(startDestination = "workouts") {
+                    composable("workouts") {}
+                    composable("settings") {}
+                }
                 BottomNavBar(navController = navController)
             }
         }
 
         composeTestRule.onNodeWithText("Workouts").performClick()
+        composeTestRule.onNodeWithText("Settings").performClick()
     }
 }
