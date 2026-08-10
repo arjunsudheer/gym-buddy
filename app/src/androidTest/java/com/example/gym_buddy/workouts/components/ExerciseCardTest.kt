@@ -69,4 +69,30 @@ class ExerciseCardTest {
 
         composeTestRule.onNodeWithText("Weight (kg)").assertIsDisplayed()
     }
+
+    @Test
+    fun weightExerciseCard_expanded_allowsEditingName() {
+        val exercise = WeightExercise(1, "Bench Press", 3, 10, 60, "")
+        
+        composeTestRule.setContent {
+            GymbuddyTheme {
+                WeightExerciseCard(
+                    workout = exercise,
+                    isExpanded = true,
+                    weightUnit = "lbs",
+                    onToggleExpand = {},
+                    onUpdate = {}
+                )
+            }
+        }
+
+        // Check if the editable name field label is present
+        composeTestRule.onNodeWithText("Exercise Name").assertIsDisplayed()
+        // Check if the text "Bench Press" appears in the editable field
+        // We use useUnmergedTree = true if needed, or just be specific.
+        // Since there are two "Bench Press" nodes, we filter for the editable one.
+        composeTestRule.onAllNodesWithText("Bench Press")
+            .filter(hasSetTextAction())
+            .assertCountEquals(1)
+    }
 }

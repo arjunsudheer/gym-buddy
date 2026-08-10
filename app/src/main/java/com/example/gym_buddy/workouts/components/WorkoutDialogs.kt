@@ -56,11 +56,11 @@ fun AddExerciseModal(
 
     val weightVal = weight.toIntOrNull() ?: 0
     val maxWeight = if (weightUnit == "lbs") 2000 else 907
-    val isWeightError = weight.isNotEmpty() && weightVal > maxWeight
+    val isWeightError = weight.isNotEmpty() && (weightVal > maxWeight || weightVal < 0 || (weight.startsWith("-") && weight.length > 1))
     val setsVal = sets.toIntOrNull() ?: 0
-    val isSetsError = sets.isNotEmpty() && setsVal > 100
+    val isSetsError = sets.isNotEmpty() && (setsVal > 100 || setsVal < 0 || (sets.startsWith("-") && sets.length > 1))
     val repsVal = reps.toIntOrNull() ?: 0
-    val isRepsError = reps.isNotEmpty() && repsVal > 100
+    val isRepsError = reps.isNotEmpty() && (repsVal > 100 || repsVal < 0 || (reps.startsWith("-") && reps.length > 1))
     
     val scrollState = rememberScrollState()
 
@@ -166,8 +166,10 @@ fun AddExerciseModal(
                             singleLine = true,
                             isError = isWeightError,
                             supportingText = {
-                                if (isWeightError) {
+                                if (weightVal > maxWeight) {
                                     Text(text = "Max weight is $maxWeight", color = MaterialTheme.colorScheme.error)
+                                } else if (weightVal < 0 || weight.startsWith("-")) {
+                                    Text(text = "Must be positive", color = MaterialTheme.colorScheme.error)
                                 }
                             }
                         )
@@ -185,8 +187,10 @@ fun AddExerciseModal(
                                 singleLine = true,
                                 isError = isSetsError,
                                 supportingText = {
-                                    if (isSetsError) {
+                                    if (setsVal > 100) {
                                         Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                    } else if (setsVal < 0 || sets.startsWith("-")) {
+                                        Text(text = "Must be positive", color = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             )
@@ -200,8 +204,10 @@ fun AddExerciseModal(
                                 singleLine = true,
                                 isError = isRepsError,
                                 supportingText = {
-                                    if (isRepsError) {
+                                    if (repsVal > 100) {
                                         Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                    } else if (repsVal < 0 || reps.startsWith("-")) {
+                                        Text(text = "Must be positive", color = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             )

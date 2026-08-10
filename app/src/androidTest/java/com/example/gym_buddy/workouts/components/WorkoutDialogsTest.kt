@@ -110,4 +110,36 @@ class WorkoutDialogsTest {
         composeTestRule.onNodeWithText("Max 100").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save Exercise").assertIsNotEnabled()
     }
+
+    @Test
+    fun addExerciseModal_saveButtonDisabled_whenValuesNegative() {
+        composeTestRule.setContent {
+            GymbuddyTheme {
+                AddExerciseModal(
+                    isRestDay = false,
+                    onDismiss = {},
+                    onSave = { _, _, _, _ -> },
+                    onAddRestDay = {}
+                )
+            }
+        }
+
+        // Fill fields with valid data first
+        composeTestRule.onNodeWithText("Exercise Name").performTextInput("Bench Press")
+        composeTestRule.onNodeWithText("Weight (lbs)").performTextInput("60")
+        composeTestRule.onNodeWithText("Sets").performTextInput("3")
+        composeTestRule.onNodeWithText("Reps").performTextInput("10")
+        composeTestRule.onNodeWithText("Save Exercise").assertIsEnabled()
+
+        // Test weight negative
+        composeTestRule.onNodeWithText("Weight (lbs)").performTextReplacement("-1")
+        composeTestRule.onNodeWithText("Must be positive").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Save Exercise").assertIsNotEnabled()
+        composeTestRule.onNodeWithText("Weight (lbs)").performTextReplacement("60")
+
+        // Test sets negative
+        composeTestRule.onNodeWithText("Sets").performTextReplacement("-5")
+        composeTestRule.onNodeWithText("Must be positive").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Save Exercise").assertIsNotEnabled()
+    }
 }

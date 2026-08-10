@@ -72,11 +72,11 @@ fun WeightExerciseCard(
 
     val maxWeight = if (weightUnit == "lbs") 2000 else 907
     val weightInt = weight.toIntOrNull() ?: 0
-    val isWeightError = weight.isNotEmpty() && weightInt > maxWeight
+    val isWeightError = weight.isNotEmpty() && (weightInt > maxWeight || weightInt < 0 || (weight.startsWith("-") && weight.length > 1))
     val setsInt = sets.toIntOrNull() ?: 0
-    val isSetsError = sets.isNotEmpty() && setsInt > 100
+    val isSetsError = sets.isNotEmpty() && (setsInt > 100 || setsInt < 0 || (sets.startsWith("-") && sets.length > 1))
     val repsInt = reps.toIntOrNull() ?: 0
-    val isRepsError = reps.isNotEmpty() && repsInt > 100
+    val isRepsError = reps.isNotEmpty() && (repsInt > 100 || repsInt < 0 || (reps.startsWith("-") && reps.length > 1))
 
     LaunchedEffect(exerciseName, weight, sets, reps, notes) {
         if (!isWeightError && !isSetsError && !isRepsError) {
@@ -140,6 +140,21 @@ fun WeightExerciseCard(
                         modifier = Modifier.padding(bottom = 16.dp),
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
+
+                    OutlinedTextField(
+                        value = exerciseName,
+                        onValueChange = { exerciseName = it },
+                        label = { Text("Exercise Name", fontSize = 12.sp) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
                     
                     OutlinedTextField(
                         value = weight,
@@ -151,8 +166,10 @@ fun WeightExerciseCard(
                         singleLine = true,
                         isError = isWeightError,
                         supportingText = {
-                            if (isWeightError) {
+                            if (weightInt > maxWeight) {
                                 Text(text = "Max weight is $maxWeight", color = MaterialTheme.colorScheme.error)
+                            } else if (weightInt < 0 || weight.startsWith("-")) {
+                                Text(text = "Must be positive", color = MaterialTheme.colorScheme.error)
                             }
                         },
                         colors = OutlinedTextFieldDefaults.colors(
@@ -174,8 +191,10 @@ fun WeightExerciseCard(
                             singleLine = true,
                             isError = isSetsError,
                             supportingText = {
-                                if (isSetsError) {
+                                if (setsInt > 100) {
                                     Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                } else if (setsInt < 0 || sets.startsWith("-")) {
+                                    Text(text = "Must be positive", color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
@@ -193,8 +212,10 @@ fun WeightExerciseCard(
                             singleLine = true,
                             isError = isRepsError,
                             supportingText = {
-                                if (isRepsError) {
+                                if (repsInt > 100) {
                                     Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                } else if (repsInt < 0 || reps.startsWith("-")) {
+                                    Text(text = "Must be positive", color = MaterialTheme.colorScheme.error)
                                 }
                             },
                             colors = OutlinedTextFieldDefaults.colors(
