@@ -46,11 +46,12 @@ import com.example.gym_buddy.workouts.models.WeightExercise
 fun WorkoutCard(
     exercise: Exercise,
     isExpanded: Boolean,
+    weightUnit: String = "lbs",
     onToggleExpand: () -> Unit,
     onUpdate: (Exercise) -> Unit
 ) {
     when (exercise) {
-        is WeightExercise -> WeightExerciseCard(exercise, isExpanded, onToggleExpand, onUpdate)
+        is WeightExercise -> WeightExerciseCard(exercise, isExpanded, weightUnit, onToggleExpand, onUpdate)
         is RestExercise -> RestExerciseCard(exercise)
     }
 }
@@ -59,6 +60,7 @@ fun WorkoutCard(
 fun WeightExerciseCard(
     workout: WeightExercise,
     isExpanded: Boolean,
+    weightUnit: String = "lbs",
     onToggleExpand: () -> Unit,
     onUpdate: (Exercise) -> Unit
 ) {
@@ -105,7 +107,7 @@ fun WeightExerciseCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "$weight • $sets sets • $reps reps",
+                        text = "$weight $weightUnit • $sets sets • $reps reps",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -132,7 +134,7 @@ fun WeightExerciseCard(
                     OutlinedTextField(
                         value = weight,
                         onValueChange = { weight = it },
-                        label = { Text("Weight", fontSize = 12.sp) },
+                        label = { Text("Weight ($weightUnit)", fontSize = 12.sp) },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(12.dp),

@@ -43,6 +43,7 @@ import com.example.gym_buddy.workouts.models.RestExercise
 @Composable
 fun WorkoutsScreen(
     modifier: Modifier = Modifier,
+    weightUnit: String = "lbs",
     viewModel: WorkoutsViewModel = viewModel(
         factory = WorkoutsViewModelFactory(LocalContext.current.applicationContext as Application)
     )
@@ -121,6 +122,7 @@ fun WorkoutsScreen(
                         WorkoutCard(
                             exercise = workout,
                             isExpanded = expandedId == workout.id,
+                            weightUnit = weightUnit,
                             onToggleExpand = { viewModel.toggleWorkoutExpansion(workout.id) },
                             onUpdate = { viewModel.updateWorkout(it) }
                         )
@@ -135,6 +137,7 @@ fun WorkoutsScreen(
         val isRestDay = workouts.any { it is RestExercise }
         AddExerciseModal(
             isRestDay = isRestDay,
+            weightUnit = weightUnit,
             onDismiss = { viewModel.showAddModal(false) },
             onSave = { name, weight, sets, reps ->
                 viewModel.addWorkout(name, weight, sets, reps)

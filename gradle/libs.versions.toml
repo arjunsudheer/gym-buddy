@@ -19,6 +19,7 @@ turbine = "1.2.1"
 coreTesting = "2.2.0"
 robolectric = "4.16.1"
 androidxTestCore = "1.7.0"
+datastore = "1.2.1"
 
 
 [libraries]
@@ -45,11 +46,13 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "materialIconsAndCompose" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsAndCompose" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "androidxTestCore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

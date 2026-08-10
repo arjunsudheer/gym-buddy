@@ -60,6 +60,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.mockk.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.navigation.compose)
@@ -73,6 +74,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     // For collectAsState
     implementation(libs.androidx.lifecycle.common.java8)
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
 
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
