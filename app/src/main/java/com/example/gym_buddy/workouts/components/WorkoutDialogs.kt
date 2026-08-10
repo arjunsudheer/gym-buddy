@@ -55,7 +55,8 @@ fun AddExerciseModal(
     var expanded by remember { mutableStateOf(false) }
 
     val weightVal = weight.toIntOrNull() ?: 0
-    val isWeightError = weight.isNotEmpty() && weightVal > 500
+    val maxWeight = if (weightUnit == "lbs") 2000 else 907
+    val isWeightError = weight.isNotEmpty() && weightVal > maxWeight
     val setsVal = sets.toIntOrNull() ?: 0
     val isSetsError = sets.isNotEmpty() && setsVal > 100
     val repsVal = reps.toIntOrNull() ?: 0
@@ -166,7 +167,7 @@ fun AddExerciseModal(
                             isError = isWeightError,
                             supportingText = {
                                 if (isWeightError) {
-                                    Text(text = "Max weight is 500", color = MaterialTheme.colorScheme.error)
+                                    Text(text = "Max weight is $maxWeight", color = MaterialTheme.colorScheme.error)
                                 }
                             }
                         )

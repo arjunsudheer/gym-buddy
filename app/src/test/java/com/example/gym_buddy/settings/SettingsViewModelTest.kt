@@ -23,6 +23,7 @@ class SettingsViewModelTest {
 
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
     private val repository: SettingsRepository = mockk(relaxed = true)
+    private val workoutDao: com.example.gym_buddy.workouts.WorkoutDao = mockk(relaxed = true)
     private lateinit var viewModel: SettingsViewModel
     private val weightUnitFlow = MutableStateFlow("lbs")
 
@@ -30,7 +31,7 @@ class SettingsViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { repository.weightUnit } returns weightUnitFlow
-        viewModel = SettingsViewModel(repository)
+        viewModel = SettingsViewModel(repository, workoutDao)
     }
 
     @After
