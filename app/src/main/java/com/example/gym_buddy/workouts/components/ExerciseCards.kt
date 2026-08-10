@@ -70,19 +70,29 @@ fun WeightExerciseCard(
     var reps by remember(workout.id, workout.reps) { mutableStateOf(workout.reps.toString()) }
     var notes by remember(workout.id, workout.notes) { mutableStateOf(workout.notes) }
 
+    val maxWeight = if (weightUnit == "lbs") 2000 else 907
+    val weightInt = weight.toIntOrNull() ?: 0
+    val isWeightError = weight.isNotEmpty() && weightInt > maxWeight
+    val setsInt = sets.toIntOrNull() ?: 0
+    val isSetsError = sets.isNotEmpty() && setsInt > 100
+    val repsInt = reps.toIntOrNull() ?: 0
+    val isRepsError = reps.isNotEmpty() && repsInt > 100
+
     LaunchedEffect(exerciseName, weight, sets, reps, notes) {
-        val w = (weight.toIntOrNull() ?: workout.weight).coerceAtLeast(0)
-        val s = (sets.toIntOrNull() ?: workout.sets).coerceAtLeast(0)
-        val r = (reps.toIntOrNull() ?: workout.reps).coerceAtLeast(0)
-        if (exerciseName != workout.name || w != workout.weight || 
-            s != workout.sets || r != workout.reps || notes != workout.notes) {
-            onUpdate(workout.copy(
-                name = exerciseName,
-                weight = w,
-                sets = s,
-                reps = r,
-                notes = notes
-            ))
+        if (!isWeightError && !isSetsError && !isRepsError) {
+            val w = (weight.toIntOrNull() ?: workout.weight).coerceAtLeast(0)
+            val s = (sets.toIntOrNull() ?: workout.sets).coerceAtLeast(0)
+            val r = (reps.toIntOrNull() ?: workout.reps).coerceAtLeast(0)
+            if (exerciseName != workout.name || w != workout.weight || 
+                s != workout.sets || r != workout.reps || notes != workout.notes) {
+                onUpdate(workout.copy(
+                    name = exerciseName,
+                    weight = w,
+                    sets = s,
+                    reps = r,
+                    notes = notes
+                ))
+            }
         }
     }
 
@@ -139,6 +149,12 @@ fun WeightExerciseCard(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
+                        isError = isWeightError,
+                        supportingText = {
+                            if (isWeightError) {
+                                Text(text = "Max weight is $maxWeight", color = MaterialTheme.colorScheme.error)
+                            }
+                        },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.secondary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outline
@@ -156,6 +172,12 @@ fun WeightExerciseCard(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
+                            isError = isSetsError,
+                            supportingText = {
+                                if (isSetsError) {
+                                    Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                }
+                            },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline
@@ -169,6 +191,12 @@ fun WeightExerciseCard(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true,
+                            isError = isRepsError,
+                            supportingText = {
+                                if (isRepsError) {
+                                    Text(text = "Max 100", color = MaterialTheme.colorScheme.error)
+                                }
+                            },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MaterialTheme.colorScheme.secondary,
                                 unfocusedBorderColor = MaterialTheme.colorScheme.outline

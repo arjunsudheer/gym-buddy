@@ -93,9 +93,9 @@ class WorkoutDialogsTest {
         composeTestRule.onNodeWithText("Reps").performTextInput("10")
         composeTestRule.onNodeWithText("Save Exercise").assertIsEnabled()
 
-        // Test weight > 500
-        composeTestRule.onNodeWithText("Weight (lbs)").performTextReplacement("501")
-        composeTestRule.onNodeWithText("Max weight is 500").assertIsDisplayed()
+        // Test weight > 2000
+        composeTestRule.onNodeWithText("Weight (lbs)").performTextReplacement("2001")
+        composeTestRule.onNodeWithText("Max weight is 2000").assertIsDisplayed()
         composeTestRule.onNodeWithText("Save Exercise").assertIsNotEnabled()
         composeTestRule.onNodeWithText("Weight (lbs)").performTextReplacement("60")
 
