@@ -1,0 +1,14 @@
+package com.arjunsudheer.gymbuddy.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Pink80 = Color(0xFFEFB8C8)
+
+val GymBlue = Color(0xFF2196F3)
+val GymLightBlue = Color(0xFF03A9F4)
+val DarkBackground = Color(0xFF000000)
+val DarkSurface = Color(0xFF121212)
+val ErrorRed = Color(0xFFFF3131)
+
+val LightBackground = Color(0xFFFFFFFF)
+val LightSurface = Color(0xFFF5F5F5)
