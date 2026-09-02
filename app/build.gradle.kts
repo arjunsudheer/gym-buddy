@@ -20,7 +20,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            optimization {
+                enable = true
+            }
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
