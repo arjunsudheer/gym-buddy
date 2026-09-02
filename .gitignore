@@ -1,15 +1,42 @@
-*.iml
+# Built artifacts
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
 /build
+/app/build
 /captures
+
+# IDE files
+*.iml
+.idea/workspace.xml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/deviceManager.xml
+.idea/gradle.xml
+.idea/migrations.xml
+.idea/planningMode.xml
+.idea/AndroidProjectSystem.xml
+.idea/compiler.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/markdown.xml
+.idea/modules/
+.idea/modules.xml
+.idea/project_view.xml
+.idea/shelf/
+.idea/.gitignore
+.idea/codeStyles/
+.idea/runConfigurations.xml
+
+# Local configuration
+local.properties
+.DS_Store
+
+# External builds
 .externalNativeBuild
 .cxx
-local.properties
+
+# Gradle
+gradle/gradle-daemon-jvm.properties
